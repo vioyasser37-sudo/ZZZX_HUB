@@ -1,1 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <meta name="description" content="A private, personal AI chat powered by your OpenAI API key.">
+  <title>Orbit — AI chat</title>
+  <style>
+    :root{color-scheme:dark;--bg:#101114;--panel:#17181d;--panel-2:#1d1f25;--border:#2a2c34;--text:#f2f2f4;--muted:#92949f;--accent:#b9f27c;--accent-dark:#17220d;--danger:#ff8f8f;--sidebar:260px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}button,input,textarea,select{font:inherit}button{color:inherit;cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    .app{display:flex;min-height:100vh}.sidebar{width:var(--sidebar);background:#141519;border-right:1px solid var(--border);padding:18px 14px;display:flex;flex-direction:column;flex-shrink:0;transition:transform .22s ease;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:3px 7px 22px;font-size:16px;font-weight:700;letter-spacing:-.3px}.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--accent);color:#18210f;font-size:19px;font-weight:800}.new-chat,.side-action{width:100%;display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid var(--border);border-radius:11px;background:transparent;text-align:left;color:#dedee3}.new-chat:hover,.side-action:hover{background:#202127}.history-label{margin:26px 8px 9px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.1px}.history{display:flex;flex-direction:column;gap:3px;overflow:auto}.history-item{display:flex;align-items:center;gap:8px;width:100%;border:0;border-radius:9px;padding:9px 10px;background:transparent;text-align:left;color:#c5c6ce;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.history-item:hover,.history-item.active{background:#23242a;color:var(--text)}.history-item span{overflow:hidden;text-overflow:ellipsis}.side-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border)}.side-action{border:0;color:#c3c4cc}.privacy-note{padding:10px 8px 0;color:#777984;font-size:11px;line-height:1.45}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh}.topbar{height:65px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;border-bottom:1px solid rgba(42,44,52,.75)}.top-left,.top-right{display:flex;align-items:center;gap:12px}.model-label{font-size:14px;font-weight:600}.model-badge{font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:3px 8px}.icon-btn{width:38px;height:38px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:10px;color:#c6c7ce}.icon-btn:hover{background:var(--panel-2);border-color:var(--border)}.mobile-menu{display:none}.settings-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;background:var(--panel);padding:8px 12px;font-size:13px}.settings-btn:hover{background:#23252b}.status-dot{width:7px;height:7px;border-radius:50%;background:#777984}.status-dot.ready{background:var(--accent);box-shadow:0 0 9px #b9f27c88}
+    .conversation{flex:1;overflow:auto;scroll-behavior:smooth}.chat-inner{width:min(780px,100%);margin:0 auto;padding:42px 25px 28px}.welcome{min-height:calc(100vh - 260px);display:flex;flex-direction:column;justify-content:center;padding-bottom:24px}.welcome-mark{display:grid;place-items:center;width:50px;height:50px;border-radius:16px;background:#232a1d;color:var(--accent);font-size:25px;margin-bottom:22px}.eyebrow{color:var(--accent);font-size:12px;font-weight:650;letter-spacing:1.3px;text-transform:uppercase}.welcome h1{font-size:clamp(34px,6vw,52px);line-height:1.06;letter-spacing:-2.3px;margin:9px 0 12px}.welcome p{max-width:510px;color:#a6a7b0;font-size:15px;margin:0 0 29px}.suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:620px}.suggestion{background:#17191e;border:1px solid var(--border);border-radius:13px;padding:13px 15px;text-align:left;color:#dedee3;transition:border-color .15s,background .15s}.suggestion:hover{border-color:#515543;background:#1c1e22}.suggestion strong{display:block;font-size:13px;font-weight:600;margin-bottom:3px}.suggestion span{color:var(--muted);font-size:12px}
+    .messages{display:flex;flex-direction:column;gap:28px;padding:8px 0 20px}.message{display:flex;align-items:flex-start;gap:13px}.avatar{width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;border-radius:10px;background:#26282f;color:#ddd;font-size:13px}.message.assistant .avatar{background:var(--accent);color:#17210e;font-weight:800}.message-content{min-width:0;max-width:100%;padding-top:2px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.72;color:#e3e3e7}.message.user .message-content{color:#f4f4f5}.message-actions{display:flex;gap:6px;margin:7px 0 0 43px}.tiny-btn{border:0;background:transparent;color:#858791;padding:4px 7px;border-radius:6px;font-size:11px}.tiny-btn:hover{background:#22242a;color:#ddd}.typing{display:flex;align-items:center;gap:5px;height:23px}.typing i{width:6px;height:6px;border-radius:50%;background:#aeb0b6;animation:bounce 1s infinite ease-in-out}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+    .composer-wrap{padding:10px 24px 18px}.composer{width:min(780px,100%);margin:0 auto;border:1px solid #373941;background:#1b1c21;border-radius:17px;padding:12px 12px 8px;box-shadow:0 10px 35px #0002}.composer:focus-within{border-color:#555a47}.composer textarea{width:100%;display:block;resize:none;max-height:180px;min-height:28px;border:0;outline:0;background:transparent;color:var(--text);padding:3px 3px 8px;line-height:1.5}.composer textarea::placeholder{color:#777984}.composer-bottom{display:flex;align-items:center;justify-content:space-between}.composer-hint{font-size:11px;color:#777984}.send-btn{width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:10px;background:var(--accent);color:#17210e}.send-btn:hover{background:#cdf99e}.send-btn:disabled{opacity:.42;cursor:not-allowed}.disclaimer{text-align:center;color:#747680;font-size:10px;padding-top:10px}.error-box{color:#ffc0c0;background:#321f22;border:1px solid #593136;border-radius:10px;padding:11px 13px;font-size:13px;margin:4px 0 4px 43px}.overlay{display:none;position:fixed;inset:0;background:#0009;z-index:8}.overlay.show{display:block}
+    dialog{width:min(460px,calc(100% - 28px));border:1px solid #353740;border-radius:18px;padding:0;background:#191a1f;color:var(--text);box-shadow:0 24px 80px #0008}dialog::backdrop{background:#0009}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 21px 14px;border-bottom:1px solid var(--border)}.modal-head h2{margin:0;font-size:17px;letter-spacing:-.3px}.modal-body{padding:19px 21px}.field-label{display:block;font-size:13px;font-weight:600;margin:0 0 7px}.field-help{color:var(--muted);font-size:12px;line-height:1.55;margin:6px 0 17px}.input-row{display:flex;gap:7px}.text-input,.select-input{width:100%;border:1px solid #3a3c45;border-radius:9px;background:#111216;color:var(--text);padding:10px 11px}.reveal-btn{border:1px solid var(--border);border-radius:9px;background:#22242a;padding:0 11px;font-size:12px}.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 21px 20px}.btn{border:1px solid var(--border);border-radius:9px;padding:9px 12px;background:#22242a;font-size:13px}.btn:hover{background:#2a2c33}.btn.primary{border-color:var(--accent);background:var(--accent);color:#18210f;font-weight:650}.btn.danger{color:var(--danger)}.security-note{border-radius:10px;background:#22251e;padding:11px 12px;color:#b8c5a6;font-size:11px;line-height:1.5;margin-top:12px}
+    @media(max-width:720px){.sidebar{position:fixed;inset:0 auto 0 0;transform:translateX(-105%);width:280px;box-shadow:15px 0 40px #0005}.sidebar.open{transform:translateX(0)}.mobile-menu{display:grid}.topbar{height:58px;padding:0 14px}.top-left{gap:7px}.top-right{gap:5px}.model-badge{display:none}.settings-btn{padding:8px 9px}.settings-btn .settings-text{display:none}.chat-inner{padding:30px 18px 20px}.welcome{min-height:calc(100vh - 230px)}.welcome h1{letter-spacing:-1.6px}.suggestions{grid-template-columns:1fr}.composer-wrap{padding:9px 12px 12px}.messages{gap:23px}.composer-hint{font-size:10px}.privacy-note{font-size:10px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Chat navigation">
+      <div class="brand"><div class="brand-mark" aria-hidden="true">✳</div><span>Orbit</span></div>
+      <button class="new-chat" id="newChat"><span aria-hidden="true">＋</span> New chat</button>
+      <div class="history-label">Recent</div>
+      <nav class="history" id="history" aria-label="Recent conversations"></nav>
+      <div class="side-bottom">
+        <button class="side-action" id="sideSettings"><span aria-hidden="true">⚙</span> Settings &amp; API key</button>
+        <div class="privacy-note">Your API key stays in this tab and is never saved by Orbit.</div>
+      </div>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+    <main class="main">
+      <header class="topbar">
+        <div class="top-left">
+          <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Open menu">☰</button>
+          <span class="model-label">Chat</span><span class="model-badge" id="modelBadge">GPT-4o mini</span>
+        </div>
+        <div class="top-right">
+          <span class="status-dot" id="statusDot" title="API key not set"></span>
+          <button class="settings-btn" id="topSettings" aria-label="Open settings"><span aria-hidden="true">⚙</span><span class="settings-text">Settings</span></button>
+        </div>
+      </header>
+      <section class="conversation" id="conversation" aria-live="polite" aria-label="Chat conversation">
+        <div class="chat-inner" id="chatInner"></div>
+      </section>
+      <div class="composer-wrap">
+        <form class="composer" id="chatForm">
+          <textarea id="promptInput" rows="1" placeholder="Message Orbit..." aria-label="Message" maxlength="12000"></textarea>
+          <div class="composer-bottom"><span class="composer-hint">Enter to send · Shift + Enter for a new line</span><button class="send-btn" id="sendBtn" type="submit" aria-label="Send message"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m0 0 6 6m-6-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </form>
+        <div class="disclaimer">AI can make mistakes. Check important information.</div>
+      </div>
+    </main>
+  </div>
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <div class="modal-head"><h2 id="settingsTitle">Chat settings</h2><button class="icon-btn" id="closeSettings" aria-label="Close settings">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label" for="apiKeyInput">OpenAI API key</label>
+      <div class="input-row"><input class="text-input" id="apiKeyInput" type="password" autocomplete="off" placeholder="sk-..."><button class="reveal-btn" id="revealKey" type="button">Show</button></div>
+      <p class="field-help">Enter your own API key to start chatting. It is held in memory only, sent directly to OpenAI for your requests, and cleared when you reload or close this tab.</p>
+      <label class="field-label" for="modelSelect">Model</label>
+      <select class="select-input" id="modelSelect"><option value="gpt-4o-mini">GPT-4o mini · fast, efficient</option><option value="gpt-4o">GPT-4o · more capable</option></select>
+      <div class="security-note"><strong>Privacy:</strong> Orbit does not save or send your key anywhere except OpenAI. This static app sends requests from your browser; use only your own key on a trusted device. For a public multi-user app, put API requests behind a secure server.</div>
+    </div>
+    <div class="modal-actions"><button class="btn danger" id="clearKey" type="button">Clear key</button><div style="display:flex;gap:8px"><button class="btn" id="cancelSettings" type="button">Cancel</button><button class="btn primary" id="saveSettings" type="button">Save settings</button></div></div>
+  </dialog>
+  <script>
+    (() => {
+      const STORAGE_KEY = 'orbit-chat-conversations-v1';
+      const $ = (id) => document.getElementById(id);
+      const dialog = $('settingsDialog');
+      let apiKey = '';
+      let model = 'gpt-4o-mini';
+      let chats = loadChats();
+      let activeId = null;
+      let busy = false;
 
+      function loadChats() {
+        try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); return Array.isArray(saved) ? saved : []; }
+        catch { return []; }
+      }
+      function persistChats() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)); }
+        catch { /* Chat remains available in memory if browser storage is unavailable. */ }
+      }
+      function currentChat() { return chats.find(chat => chat.id === activeId); }
+      function makeChat() {
+        const chat = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), title: 'New chat', messages: [] };
+        chats.unshift(chat); activeId = chat.id; persistChats(); render(); $('promptInput').focus(); closeSidebar();
+      }
+      function render() {
+        renderHistory();
+        const host = $('chatInner');
+        host.replaceChildren();
+        const chat = currentChat();
+        if (!chat || chat.messages.length === 0) {
+          const welcome = document.createElement('div'); welcome.className = 'welcome';
+          welcome.innerHTML = '<div class="welcome-mark" aria-hidden="true">✳</div><div class="eyebrow">Your AI workspace</div><h1>What can I help<br>you with?</h1><p>Ask a question, explore an idea, or get help with something you are working on.</p><div class="suggestions"><button class="suggestion" data-prompt="Help me brainstorm ideas for a project"><strong>Brainstorm ideas</strong><span>Explore something new</span></button><button class="suggestion" data-prompt="Explain a complex topic in simple terms"><strong>Explain a topic</strong><span>Make the complicated clear</span></button><button class="suggestion" data-prompt="Help me write a polished email"><strong>Draft a message</strong><span>Find the right words</span></button><button class="suggestion" data-prompt="Give me a step-by-step plan to learn a new skill"><strong>Make a plan</strong><span>Turn a goal into steps</span></button></div>';
+          host.append(welcome);
+          host.querySelectorAll('.suggestion').forEach(button => button.addEventListener('click', () => { $('promptInput').value = button.dataset.prompt; fitInput(); $('promptInput').focus(); }));
+          return;
+        }
+        const messages = document.createElement('div'); messages.className = 'messages';
+        chat.messages.forEach((message, index) => {
+          const row = document.createElement('article'); row.className = `message ${message.role}`;
+          const avatar = document.createElement('div'); avatar.className = 'avatar'; avatar.textContent = message.role === 'assistant' ? '✳' : 'Y'; avatar.setAttribute('aria-hidden', 'true');
+          const content = document.createElement('div'); content.className = 'message-content'; content.textContent = message.content;
+          row.append(avatar, content); messages.append(row);
+          if (message.role === 'assistant') {
+            const actions = document.createElement('div'); actions.className = 'message-actions';
+            const copy = document.createElement('button'); copy.className = 'tiny-btn'; copy.textContent = 'Copy'; copy.type = 'button';
+            copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(message.content); copy.textContent = 'Copied'; setTimeout(() => copy.textContent = 'Copy', 1200); } catch { copy.textContent = 'Unavailable'; } });
+            actions.append(copy); messages.append(actions);
+          }
+        });
+        if (busy) {
+          const row = document.createElement('div'); row.className = 'message assistant'; row.innerHTML = '<div class="avatar" aria-hidden="true">✳</div><div class="message-content"><span class="typing" aria-label="Thinking"><i></i><i></i><i></i></span></div>'; messages.append(row);
+        }
+        host.append(messages);
+        requestAnimationFrame(() => { $('conversation').scrollTop = $('conversation').scrollHeight; });
+      }
+      function renderHistory() {
+        const list = $('history'); list.replaceChildren();
+        chats.forEach(chat => {
+          const button = document.createElement('button'); button.className = `history-item${chat.id === activeId ? ' active' : ''}`; button.type = 'button'; button.title = chat.title;
+          const icon = document.createElement('span'); icon.textContent = '▤'; icon.setAttribute('aria-hidden', 'true');
+          const title = document.createElement('span'); title.textContent = chat.title;
+          button.append(icon, title); button.addEventListener('click', () => { activeId = chat.id; render(); closeSidebar(); }); list.append(button);
+        });
+      }
+      function fitInput() { const input = $('promptInput'); input.style.height = 'auto'; input.style.height = `${Math.min(input.scrollHeight, 180)}px`; }
+      function openSettings() { $('apiKeyInput').value = apiKey; $('modelSelect').value = model; dialog.showModal(); }
+      function closeSidebar() { $('sidebar').classList.remove('open'); $('overlay').classList.remove('show'); }
+      function setBusy(value) { busy = value; $('sendBtn').disabled = value; $('promptInput').disabled = value; render(); }
+      function showError(text) { const error = document.createElement('div'); error.className = 'error-box'; error.textContent = text; $('chatInner').append(error); $('conversation').scrollTop = $('conversation').scrollHeight; }
+      async function sendMessage(text) {
+        if (!text || busy) return;
+        if (!apiKey) { openSettings(); $('apiKeyInput').focus(); return; }
+        if (!currentChat()) { const chat = { id: String(Date.now()), title: 'New chat', messages: [] }; chats.unshift(chat); activeId = chat.id; }
+        const chat = currentChat();
+        chat.messages.push({ role: 'user', content: text });
+        if (chat.messages.filter(item => item.role === 'user').length === 1) chat.title = text.trim().slice(0, 38) + (text.trim().length > 38 ? '…' : '');
+        persistChats(); $('promptInput').value = ''; fitInput(); setBusy(true);
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({ model, messages: chat.messages.map(({ role, content }) => ({ role, content })), temperature: 0.7 })
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            const message = data?.error?.message || `Request failed (${response.status}). Check your API key and account access in Settings.`;
+            if (response.status === 401) { apiKey = ''; $('statusDot').classList.remove('ready'); $('statusDot').title = 'API key needs attention'; }
+            throw new Error(message);
+          }
+          const answer = data?.choices?.[0]?.message?.content;
+          if (typeof answer !== 'string' || !answer.trim()) throw new Error('The model returned an empty response. Please try again.');
+          chat.messages.push({ role: 'assistant', content: answer }); persistChats();
+        } catch (error) {
+          chat.messages.pop(); persistChats();
+          showError(error instanceof TypeError ? 'Could not connect to OpenAI. Check your internet connection and try again.' : (error.message || 'Something went wrong. Please try again.'));
+        } finally { setBusy(false); }
+      }
+      $('newChat').addEventListener('click', makeChat);
+      $('topSettings').addEventListener('click', openSettings);
+      $('sideSettings').addEventListener('click', () => { openSettings(); closeSidebar(); });
+      $('closeSettings').addEventListener('click', () => dialog.close());
+      $('cancelSettings').addEventListener('click', () => dialog.close());
+      $('saveSettings').addEventListener('click', () => {
+        const value = $('apiKeyInput').value.trim();
+        if (value && !value.startsWith('sk-')) { $('apiKeyInput').setCustomValidity('Check that this looks like an OpenAI API key.'); $('apiKeyInput').reportValidity(); $('apiKeyInput').setCustomValidity(''); return; }
+        apiKey = value; model = $('modelSelect').value; $('modelBadge').textContent = model === 'gpt-4o' ? 'GPT-4o' : 'GPT-4o mini';
+        $('statusDot').classList.toggle('ready', Boolean(apiKey)); $('statusDot').title = apiKey ? 'API key is set for this tab' : 'API key not set'; dialog.close();
+      });
+      $('clearKey').addEventListener('click', () => { apiKey = ''; $('apiKeyInput').value = ''; $('statusDot').classList.remove('ready'); $('statusDot').title = 'API key not set'; });
+      $('revealKey').addEventListener('click', () => { const input = $('apiKeyInput'); const shown = input.type === 'text'; input.type = shown ? 'password' : 'text'; $('revealKey').textContent = shown ? 'Show' : 'Hide'; });
+      $('chatForm').addEventListener('submit', event => { event.preventDefault(); sendMessage($('promptInput').value.trim()); });
+      $('promptInput').addEventListener('input', fitInput);
+      $('promptInput').addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); $('chatForm').requestSubmit(); } });
+      $('menuBtn').addEventListener('click', () => { $('sidebar').classList.add('open'); $('overlay').classList.add('show'); });
+      $('overlay').addEventListener('click', closeSidebar);
+      render();
+    })();
+  </script>
+</body>
+</html>
